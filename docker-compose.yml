@@ -1,15 +1,13 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: sql-exercises-db
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      MYSQL_ROOT_PASSWORD: password # No need for complications, since this is for a test.
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
 
 volumes:
-  pgdata:
+  mysql-data:
