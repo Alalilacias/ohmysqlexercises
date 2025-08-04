@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Author: Alalilacias
+# Description: Helper script to extract and execute the queries. Currently not working.
+# Version: 0.0.1
+
+QUERIES_FILE=$PWD/$1
+DATABASE=$2
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QUERY_BUFFER=""
+
+main() {
+  ensure_variables
+  source "$SCRIPT_DIR/sqldock_funcs"
+  read_queries
+}
+ensure_variables() {
+  if [[ ! -f "$QUERIES_FILE" ]]; then
+    echo "$QUERIES_FILE not found. Ensure it is correct"
+    exit 1
+  fi
+  if [[ -z "$DATABASE" ]]; then
+    echo "Database not found. It is necessary."
+    exit 1
+  fi
+
+}
+read_queries() {
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%--*}"
+
+    if [[ -z "${line// /}" ]]; then
+      continue
+    fi
+
+    QUERY_BUFFER+="$line "
+
+    if [[ "$line" == *";" ]]; then
+      clean_query=$(echo "$QUERY_BUFFER" | sed 's/[[:space:]]*;$//')
+      echo "Ejecutando: $clean_query"
+      mysql_exec_query "$clean_query" "$DATABASE"
+      QUERY_BUFFER=""
+    fi
+  done <"$QUERIES_FILE"
+}
+
+main
