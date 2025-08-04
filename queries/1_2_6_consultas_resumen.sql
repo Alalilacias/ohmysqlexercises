@@ -1,3 +1,5 @@
+use empleados;
+
 -- 1. Calcula la suma del presupuesto de todos los departamentos.
 SELECT SUM(presupuesto) AS suma_presupuestos
 FROM departamento;
